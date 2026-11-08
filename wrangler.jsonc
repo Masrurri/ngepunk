@@ -1,0 +1,8 @@
+// Cloudflare Workers config: ngepunk is a plain static site, so it's served as static assets only.
+{
+  "name": "ngepunk",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./"
+  }
+}
