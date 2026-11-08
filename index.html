@@ -55,7 +55,7 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; background:#fff; border:2px solid #000; border-radius:0; }
   input[type=range]::-moz-range-thumb { width:12px; height:12px; background:#fff; border:2px solid #000; border-radius:0; }
   .stage { grid-area:stage; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:16px; min-width:0; min-height:0;
-    background:radial-gradient(#000 0.6px, transparent 0.7px) 0 0/18px 18px; }
+    }
   .frame { position:relative; border:1.5px solid #000; box-shadow:6px 6px 0 #000; background:#fff; width:min(100%, calc(100vh - 250px)); aspect-ratio:1; }
   .frame.checker { background:repeating-conic-gradient(#e6e6e6 0 25%, #fff 0 50%) 0 0/20px 20px; }
   .frame canvas { width:100%; height:100%; display:block; cursor:grab; touch-action:none; }
@@ -116,8 +116,8 @@
     .tabs { display:flex; overflow-x:auto; border-right:none; border-bottom:1.5px solid #000; padding:0; }
     .tabs button { white-space:nowrap; width:auto; }
     .panel { border-right:none; }
-    header { flex-wrap:wrap; }
-    .actions { margin-left:0; flex-wrap:wrap; }
+    header { flex-wrap:nowrap; }
+    .actions { margin-left:auto; }
     .actions button { padding:6px 10px; font-size:13px; }
     .canvas-actions { width:100%; }
     .canvas-actions { gap:8px; }
