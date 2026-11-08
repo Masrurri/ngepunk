@@ -195,7 +195,13 @@ cv.addEventListener('pointermove', e => {
   view.yaw += dx * 0.012; view.pitch = clamp(view.pitch + dy * 0.006, -0.6, 0.6); drag.x = e.clientX; drag.y = e.clientY; dirty = true; $('#dock').syncs();
 });
 cv.addEventListener('pointerup', () => { drag = null; });
-function randomize() { cfg = randomCfg(); save(); dirty = true; buildPanel(); }
+// Previous: step back through characters replaced by Randomize (kept for this visit only).
+const history = [];
+function syncPrev() { $('#prev').disabled = !history.length; }
+function randomize() { history.push(structuredClone(cfg)); if (history.length > 50) history.shift(); cfg = randomCfg(); save(); dirty = true; buildPanel(); syncPrev(); }
+function previous() { if (!history.length) return; cfg = history.pop(); save(); dirty = true; buildPanel(); syncPrev(); }
+$('#prev').addEventListener('click', previous);
+syncPrev();
 $('#rand').addEventListener('click', randomize);
 $('#shuffle').addEventListener('click', buildCollection);
 $('#collToggle').addEventListener('click', () => { const open = $('#coll').classList.toggle('open'); $('#collBar').classList.toggle('open', open); $('#collToggle').setAttribute('aria-expanded', open); });

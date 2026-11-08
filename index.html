@@ -65,6 +65,7 @@
   .canvas-actions button { padding:10px 18px; font-family:'Space Mono',monospace; font-size:14px; font-weight:700; box-shadow:3px 3px 0 #000; display:flex; align-items:center; gap:8px; }
   .canvas-actions button:active { transform:translate(3px,3px); box-shadow:none; }
   .canvas-actions .solid { background:#000; color:#fff; }
+  .canvas-actions button:disabled { opacity:.35; cursor:not-allowed; box-shadow:none; }
   .dock { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; justify-content:center; background:#fff; border:1.5px solid #000; padding:8px 12px; width:min(100%, calc(100vh - 250px)); }
   .dock label.sl { grid-template-columns:40px 1fr 38px; margin:0; flex:1 1 160px; }
   .dock .seg button { padding:5px 8px; }
@@ -119,7 +120,8 @@
     .actions { margin-left:0; flex-wrap:wrap; }
     .actions button { padding:6px 10px; font-size:13px; }
     .canvas-actions { width:100%; }
-    .canvas-actions button { flex:1; justify-content:center; }
+    .canvas-actions { gap:8px; }
+    .canvas-actions button { flex:1; justify-content:center; padding:10px 6px; font-size:13px; white-space:nowrap; }
     .canvas-actions kbd { display:none; }
   }
   @media (prefers-reduced-motion:reduce) { .coll-toggle .chev { transition:none; } }
@@ -141,6 +143,7 @@
     </div>
     <section class="stage">
       <div class="canvas-actions">
+        <button id="prev" aria-label="Previous random character">Previous</button>
         <button id="rand">Randomize <kbd>R</kbd></button>
         <button id="export" class="solid">Export PNG</button>
       </div>
@@ -151,7 +154,7 @@
       <div class="dock" id="dock"></div>
     </section>
     <aside class="coll" id="coll" aria-label="Collection">
-      <div class="coll-head"><h2>Collection</h2><span class="coll-hint">click to customize</span><button id="shuffle">Randomize ↻</button></div>
+      <div class="coll-head"><h2>Collection</h2><span class="coll-hint">click to customize</span><button id="shuffle">Randomize</button></div>
       <div class="coll-grid" id="collGrid"></div>
     </aside>
   </main>
