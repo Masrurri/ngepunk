@@ -79,7 +79,7 @@ No framework. No bundler. No npm install. No build step.
 You need **[Node.js](https://nodejs.org)** (any recent version) and a browser. That's it.
 
 ```bash
-git clone <this-repo> ngepunk   # or just download the folder
+git clone https://github.com/Masrurri/ngepunk.git
 cd ngepunk
 node serve.js
 ```
