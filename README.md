@@ -34,7 +34,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 | Half body | 8 | none, stick + bow tie, tee, stripes, hoodie, punk jacket, turtleneck, suit |
 
 Plus **15 colors** for skin, hair, clothes and headwear, **3 fill styles** (offset misprint, scribble, flat),
-**5 backgrounds** (grid, zine collage, paper, halftone, white), and sliders for eye spacing, feature height, feature size, ink weight, wobble and misregistration.
+**6 backgrounds** (grid, zine collage, paper, halftone, white, transparent), and sliders for eye spacing, feature height, feature size, ink weight, wobble and misregistration.
 
 **Possible faces:** about **766 billion** from the single-pick parts alone. Add the punk bits and it's around **50 quadrillion**.
 Add colors and you're past **10²¹**. You will not run out. Neither will your friends.
@@ -49,7 +49,8 @@ Add colors and you're past **10²¹**. You will not run out. Neither will your f
 - **Randomize** (button or the `R` key) always rolls something punk: 1–2 piercings, usually a tattoo,
   often spikes. Hijab, peci and turban included — culture and spikes are not mutually exclusive.
 - **Collection** — 24 random heads on the side (a dropdown on mobile). Click one to steal it into the editor. Randomize the whole batch whenever.
-- **Export PNG** — 1000×1000, grain and all.
+- **Export PNG** — 1000×1000, grain and all. Pick the **transparent** background to export a clean cut-out.
+- **Die-cut sticker** (Scene → Effects) — a sticker border around the whole character, in any color, with optional thin grid-paper rules and adjustable thickness. Pair it with transparent and you've got a ready-to-print sticker.
 - **Remembers your character** in the browser, so a refresh doesn't wipe your masterpiece.
 - **Creator card** — tap Creator in the header.
 

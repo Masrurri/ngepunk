@@ -22,7 +22,7 @@ const TABS = [
   { id: 'bits', label: 'Punk bits', groups: [['extras', 'Extras — pick many']] },
   { id: 'body', label: 'Body', groups: [['body', 'Half body']] },
   { id: 'color', label: 'Color', colors: [['skin', 'Skin / fur'], ['hairColor', 'Hair'], ['topColor', 'Clothes'], ['hatColor', 'Headwear, masks + tie']], seg: [['fill', 'Fill style']] },
-  { id: 'scene', label: 'Scene', seg: [['bg', 'Background']], toggles: [['shade', 'Halftone shading'], ['boil', 'Line boil (on twos)']], sliders: [['weight', 'Ink weight', 0.8, 4, 0.1], ['wobble', 'Wobble', 0, 3, 0.1], ['mis', 'Misregister', 0, 14, 0.5]] },
+  { id: 'scene', label: 'Scene', seg: [['bg', 'Background']], toggles: [['shade', 'Halftone shading'], ['boil', 'Line boil (on twos)'], ['dieCut', 'Die-cut sticker'], ['cutGrid', 'Die-cut grid']], sliders: [['weight', 'Ink weight', 0.8, 4, 0.1], ['wobble', 'Wobble', 0, 3, 0.1], ['mis', 'Misregister', 0, 14, 0.5], ['cutSize', 'Die-cut size', 4, 36, 1]], colorsAfter: [['cutColor', 'Die-cut color', ['#ffffff', ...COLORS.slice(1)]]] },
 ];
 function variant(key, val) {
   if (key === 'type') return { ...cfg, ...PRESET[val], extras: val === 'cat' ? [...new Set([...cfg.extras, 'whiskers'])] : cfg.extras.filter(e => e !== 'whiskers') };
@@ -54,12 +54,13 @@ function buildPanel() {
     }
     p.append(g);
   }
-  for (const [key, label] of T.colors || []) {
+  const swatches = ([key, label, pal = COLORS]) => {
     p.append(el('h3', { text: label }));
     const w = el('div', { class: 'swatches' });
-    for (const col of COLORS) { const b = el('button', { class: 'sw' + (col ? '' : ' none'), 'aria-label': `${label}: ${col || 'none'}`, on: () => set({ [key]: col }) }); if (col) b.style.background = col; b.dataset.key = key; b.dataset.val = col || ''; w.append(b); }
+    for (const col of pal) { const b = el('button', { class: 'sw' + (col ? '' : ' none'), 'aria-label': `${label}: ${col || 'none'}`, on: () => set({ [key]: col }) }); if (col) b.style.background = col; b.dataset.key = key; b.dataset.val = col || ''; w.append(b); }
     p.append(w);
-  }
+  };
+  (T.colors || []).forEach(swatches);
   for (const [key, label] of T.seg || []) {
     p.append(el('h3', { text: label }));
     const s = el('div', { class: 'seg' });
@@ -68,6 +69,7 @@ function buildPanel() {
   }
   if (T.toggles) { p.append(el('h3', { text: 'Effects' })); const w = el('div', { class: 'toggles' }); for (const [key, label] of T.toggles) { const b = el('button', { class: 'toggle', text: label, on: () => set({ [key]: !cfg[key] }) }); b.dataset.key = key; b.dataset.toggle = 1; w.append(b); } p.append(w); }
   if (T.sliders) { p.append(el('h3', { text: 'Adjust' })); for (const s of T.sliders) p.append(sliderRow(...s)); }
+  (T.colorsAfter || []).forEach(swatches);
   if (tab === 'scene') {
     p.append(el('h3', { text: 'Collage' }), el('button', { class: 'toggle', text: 'Shuffle collage', on: () => set({ bgSeed: Math.floor(Math.random() * 1e6) }) }));
   }
@@ -105,17 +107,42 @@ function buildDock() {
   const sp = el('button', { class: 'toggle', text: 'Spin', on: () => { spin = !spin; sp.classList.toggle('on', spin); } });
   d.append(yaw, pitch, tilt, seg, sp);
 }
+const layer = document.createElement('canvas'), silCv = document.createElement('canvas'), cutCv = document.createElement('canvas');
 function drawMain(tick) {
-  const W = cv.width, H = cv.height;
-  mctx.setTransform(1, 0, 0, 1, 0, 0);
-  mctx.drawImage(background(cfg.bg, W, H, cfg.bgSeed || 3), 0, 0);
+  const W = cv.width, H = cv.height, clear = cfg.bg === 'transparent';
+  cv.parentElement.classList.toggle('checker', clear);
+  for (const c of [layer, silCv, cutCv]) if (c.width !== W) { c.width = W; c.height = H; }
+  // character on its own layer, so it can be stickered and sit on any (or no) background
+  const l = layer.getContext('2d'); l.setTransform(1, 0, 0, 1, 0, 0); l.clearRect(0, 0, W, H);
   const hasBody = !['none', 'stick'].includes(cfg.body);
-  renderChar(mctx, cfg, { W, H, cx: W / 2, cy: hasBody ? 390 : 470, S: hasBody ? 150 : 185, ...view, tick, paper: paperFor(cfg.bg) });
-  if (cfg.bg !== 'white') grain(mctx, W, H);
+  renderChar(l, cfg, { W, H, cx: W / 2, cy: hasBody ? 390 : 470, S: hasBody ? 150 : 185, ...view, tick, paper: paperFor(cfg.bg) });
+  mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.clearRect(0, 0, W, H);
+  if (!clear) mctx.drawImage(background(cfg.bg, W, H, cfg.bgSeed || 3), 0, 0);
+  if (cfg.dieCut) dieCut(mctx, layer, cfg.cutSize, cfg.cutColor || '#ffffff', cfg.cutGrid);
+  mctx.drawImage(layer, 0, 0);
+  if (!clear && cfg.bg !== 'white') grain(mctx, W, H);
+}
+// Sticker border: stamp the character's silhouette in a ring around itself, optionally ruled like grid paper.
+function dieCut(ctx, src, rad, color, gridOn) {
+  const W = cutCv.width, H = cutCv.height, s = silCv.getContext('2d'), t = cutCv.getContext('2d');
+  t.globalCompositeOperation = 'source-over'; t.clearRect(0, 0, W, H);
+  const stamp = (col, r) => {
+    s.globalCompositeOperation = 'source-over'; s.clearRect(0, 0, W, H); s.drawImage(src, 0, 0);
+    s.globalCompositeOperation = 'source-in'; s.fillStyle = col; s.fillRect(0, 0, W, H);
+    for (let k = 0; k < 32; k++) { const a = k / 32 * TAU; t.drawImage(silCv, Math.cos(a) * r, Math.sin(a) * r); }
+  };
+  stamp('rgba(0,0,0,0.22)', rad + 2); stamp(color, rad);
+  if (gridOn) { // thin grid-paper rules, only on the sticker
+    t.globalCompositeOperation = 'source-atop'; t.strokeStyle = 'rgba(0,0,0,0.14)'; t.lineWidth = 1; t.beginPath();
+    for (let x = 0.5; x < W; x += 20) { t.moveTo(x, 0); t.lineTo(x, H); }
+    for (let y = 0.5; y < H; y += 20) { t.moveTo(0, y); t.lineTo(W, y); }
+    t.stroke(); t.globalCompositeOperation = 'source-over';
+  }
+  ctx.drawImage(cutCv, 0, 0);
 }
 
 // ---------------------------------------------------------------- collection
-const SCENE_KEYS = ['bg', 'bgSeed', 'boil', 'shade', 'weight', 'wobble', 'mis', 'fill', 'body'];
+const SCENE_KEYS = ['bg', 'bgSeed', 'boil', 'shade', 'weight', 'wobble', 'mis', 'fill', 'body', 'dieCut', 'cutSize', 'cutColor', 'cutGrid'];
 function buildCollection() {
   const g = $('#collGrid'); g.innerHTML = '';
   for (let i = 0; i < 24; i++) {

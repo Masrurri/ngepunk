@@ -27,7 +27,7 @@ const OPTS = {
   extras: ['nosering', 'browbar', 'hoops', 'safetypin', 'lipring', 'teardrop', 'tribal', 'barbwire', 'star', 'spikeband', 'choker', 'scar', 'bandaid', 'freckles', 'eyeblack', 'whiskers'],
   body: ['none', 'stick', 'tee', 'stripes', 'hoodie', 'jacket', 'turtleneck', 'suit'],
   fill: ['offset', 'scribble', 'flat'],
-  bg: ['zine', 'paper', 'white', 'halftone', 'grid'],
+  bg: ['zine', 'paper', 'white', 'halftone', 'grid', 'transparent'],
 };
 const COLORS = [null, '#f3c9a8', '#dcae84', '#a87152', '#6e4632', '#bdbab3', '#9db3d1', '#a9b88c', '#f2a7b8', '#d9443a', '#f0cf45', '#4e6d9c', '#6f8a4a', '#c8743c', '#1b1b1b'];
 const PRESET = {
@@ -39,7 +39,7 @@ const DEFAULT = {
   hair: 'mohawk', beard: 'stubble', stache: 'none', hat: 'none', eyewear: 'none', extras: ['safetypin', 'nosering'],
   body: 'none', skin: '#f3c9a8', hairColor: '#d9443a', topColor: null, hatColor: '#d9443a',
   fill: 'offset', bg: 'grid', shade: true, boil: true, weight: 2.2, wobble: 1.2, mis: 6,
-  eyeGap: 0.36, featY: 0, featScale: 1, seed: 7,
+  eyeGap: 0.36, featY: 0, featScale: 1, seed: 7, dieCut: false, cutSize: 14, cutColor: '#ffffff', cutGrid: true,
 };
 
 const SHAPES = {
