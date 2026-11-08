@@ -13,6 +13,7 @@ function set(p) { Object.assign(cfg, p); save(); dirty = true; refresh(); }
 const LABELS = { peci1: 'peci low', peci2: 'peci mid', peci3: 'peci tall', lensmask: 'lens mask' };
 const TABS = [
   { id: 'base', label: 'Base', groups: [['type', 'Character'], ['head', 'Head shape'], ['ears', 'Ears']] },
+  { id: 'body', label: 'Body', groups: [['body', 'Half body']] },
   { id: 'eyes', label: 'Eyes', groups: [['eyes', 'Eyes'], ['brows', 'Brows']], sliders: [['eyeGap', 'Eye spacing', 0.2, 0.55, 0.01]] },
   { id: 'face', label: 'Nose + mouth', groups: [['nose', 'Nose'], ['mouth', 'Mouth']], sliders: [['featY', 'Feature height', -0.2, 0.25, 0.01], ['featScale', 'Feature size', 0.7, 1.4, 0.01]] },
   { id: 'hair', label: 'Hair + fur', groups: [['hair', 'Hair / fur pattern']] },
@@ -20,7 +21,6 @@ const TABS = [
   { id: 'hat', label: 'Headwear', groups: [['hat', 'Hats, masks + culture']] },
   { id: 'eyewear', label: 'Eyewear', groups: [['eyewear', 'Eyewear + masks']] },
   { id: 'bits', label: 'Punk bits', groups: [['extras', 'Extras — pick many']] },
-  { id: 'body', label: 'Body', groups: [['body', 'Half body']] },
   { id: 'color', label: 'Color', colors: [['skin', 'Skin / fur'], ['hairColor', 'Hair'], ['topColor', 'Clothes'], ['hatColor', 'Headwear, masks + tie']], seg: [['fill', 'Fill style']] },
   { id: 'scene', label: 'Scene', seg: [['bg', 'Background']], toggles: [['shade', 'Halftone shading'], ['boil', 'Line boil (on twos)'], ['dieCut', 'Die-cut sticker'], ['cutGrid', 'Die-cut grid']], sliders: [['weight', 'Ink weight', 0.8, 4, 0.1], ['wobble', 'Wobble', 0, 3, 0.1], ['mis', 'Misregister', 0, 14, 0.5], ['cutSize', 'Die-cut size', 4, 36, 1]], colorsAfter: [['cutColor', 'Die-cut color', ['#ffffff', ...COLORS.slice(1)]]] },
 ];
