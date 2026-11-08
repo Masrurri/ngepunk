@@ -198,7 +198,6 @@ cv.addEventListener('pointerup', () => { drag = null; });
 function randomize() { cfg = randomCfg(); save(); dirty = true; buildPanel(); }
 $('#rand').addEventListener('click', randomize);
 $('#shuffle').addEventListener('click', buildCollection);
-$('#shuffleM').addEventListener('click', buildCollection);
 $('#collToggle').addEventListener('click', () => { const open = $('#coll').classList.toggle('open'); $('#collBar').classList.toggle('open', open); $('#collToggle').setAttribute('aria-expanded', open); });
 $('#export').addEventListener('click', () => cv.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'ngepunk-' + Date.now() + '.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }));
 addEventListener('keydown', e => {
