@@ -14,7 +14,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 
 ## What's in the box
 
-**133 parts across 13 categories**, all mixable, all rotatable:
+**134 parts across 13 categories**, all mixable, all rotatable:
 
 | Category | Count | Highlights |
 |---|---:|---|
@@ -24,7 +24,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 | Eyes | 12 | ring, dot, sleepy, wink, X, spiral, cat slit, angry… |
 | Brows | 7 | line, thick, angry, worried, unibrow… |
 | Nose | 9 | line, hook, beak, long, snub, cat… — sticks out in profile |
-| Mouth | 11 | smirk, grin, teeth, tongue, fangs, cat… |
+| Mouth | 12 | smirk, grin, teeth, tongue, fangs, cat, rose in the teeth… |
 | Hair + fur | 17 | mohawk, liberty spikes, afro, bowl, long, bun, tabby / patches / tux fur |
 | Beard | 7 | stubble, goatee, full, chinstrap, chops, soul patch |
 | Mustache | 6 | chevron, pencil, handlebar, walrus, curly |

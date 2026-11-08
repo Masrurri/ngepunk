@@ -18,7 +18,7 @@ const OPTS = {
   eyes: ['ring', 'dot', 'almond', 'sleepy', 'wide', 'uneven', 'closed', 'wink', 'x', 'spiral', 'slit', 'angry'],
   brows: ['none', 'line', 'thick', 'angry', 'worried', 'unibrow', 'raised'],
   nose: ['line', 'hook', 'button', 'triangle', 'beak', 'snub', 'long', 'cat', 'none'],
-  mouth: ['line', 'smile', 'frown', 'open', 'grin', 'o', 'smirk', 'tongue', 'teeth', 'cat', 'fangs'],
+  mouth: ['line', 'smile', 'frown', 'open', 'grin', 'o', 'smirk', 'tongue', 'teeth', 'cat', 'fangs', 'rose'],
   hair: ['bald', 'buzz', 'crop', 'flattop', 'slick', 'hatched', 'curly', 'afro', 'bowl', 'mohawk', 'liberty', 'spiky', 'long', 'bun', 'tabby', 'patches', 'tux'],
   beard: ['none', 'stubble', 'goatee', 'full', 'chinstrap', 'chops', 'soul'],
   stache: ['none', 'chevron', 'pencil', 'handlebar', 'walrus', 'curly'],
@@ -470,6 +470,26 @@ function mouth(r) {
     if (t === 'teeth') { line(r, curve(-0.16, 0.16, q(0.16, 0.03)), { w: 1.1 }); blob(r, [[-0.06, m + 0.02], [0.06, m + 0.02], [0.06, m + 0.1], [-0.06, m + 0.1]], '#fff'); line(r, [[-0.06, m + 0.02], [-0.06, m + 0.1], [0.06, m + 0.1], [0.06, m + 0.02]], { sharp: true }); line(r, [[0, m + 0.02], [0, m + 0.1]], { w: 0.7 }); }
     else { blob(r, box, '#fff'); line(r, box, { close: true, sharp: true }); line(r, [[-w, m], [w, m]], { w: 0.6 }); for (let x = -w + 0.06; x < w; x += 0.06) line(r, [[x, m - h / 2], [x, m + h / 2]], { w: 0.6, single: true }); }
   }
+  if (t === 'rose') { // rose clenched in the teeth, sticking out to the side and toward the viewer
+    line(r, curve(-0.13, 0.13, x => m + 0.01 * Math.sin(x * 25)), { w: 1.1 });
+    blob(r, [[-0.08, m - 0.012, 0.03], [0.08, m - 0.012, 0.03], [0.07, m + 0.03, 0.03], [-0.07, m + 0.03, 0.03]], '#fff');
+    line(r, [[-0.08, m + 0.03, 0.03], [0.07, m + 0.03, 0.03]], { w: 0.6, single: true });
+    const stem = [[-0.36, m + 0.04, 0.05], [-0.12, m + 0.015, 0.08], [0.12, m - 0.01, 0.11], [0.34, m - 0.05, 0.17], [0.48, m - 0.1, 0.24]];
+    line(r, stem, { w: 4.2, color: '#4f6b34', single: true }, -0.4); line(r, stem, { w: 0.8 }, -0.4);
+    for (const [x, y, h, sg] of [[-0.25, m + 0.03, 0.06, 1], [0.24, m - 0.03, 0.15, -1]]) { // leaves with a vein
+      const leaf = [[x, y, h], [x + 0.07, y + sg * 0.1, h], [x + 0.17, y + sg * 0.06, h], [x + 0.09, y, h]];
+      if (blob(r, leaf, '#6f8a4a', -0.4)) { line(r, leaf, { close: true, w: 0.8 }, -0.4); line(r, [[x + 0.02, y + sg * 0.02, h], [x + 0.13, y + sg * 0.06, h]], { w: 0.5, single: true }, -0.4); }
+    }
+    for (const x of [-0.3, -0.02, 0.2]) line(r, [[x, m + 0.03 - x * 0.08, 0.07 + x * 0.12], [x + 0.035, m + 0.08 - x * 0.08, 0.07 + x * 0.12]], { w: 0.8, single: true }, -0.4); // thorns
+    const bx = 0.6, by = m - 0.18, bh = 0.3, petals = [];
+    for (let i = 0; i < 40; i++) { const a = i / 40 * TAU, k = 0.17 * (1 + 0.13 * Math.cos(a * 5)); petals.push([bx + Math.cos(a) * k, by + Math.sin(a) * k * 0.92, bh]); }
+    blob(r, [[bx - 0.08, by + 0.12, bh - 0.03], [bx - 0.2, by + 0.2, bh - 0.05], [bx - 0.02, by + 0.17, bh - 0.02], [bx + 0.08, by + 0.13, bh - 0.03]], '#6f8a4a', -0.4); // sepals
+    if (blob(r, petals, '#d9443a', -0.4)) {
+      line(r, petals, { close: true, w: 1.2 }, -0.4);
+      const sp = []; for (let i = 0; i < 34; i++) { const a = i * 0.5, k = 0.13 * (1 - i / 38); sp.push([bx + Math.cos(a) * k, by + Math.sin(a) * k * 0.9, bh + 0.02]); }
+      line(r, sp, { w: 0.9 }, -0.4);
+    }
+  }
   if (t === 'cat' || t === 'fangs') {
     line(r, [[-0.13, m - 0.06], [-0.065, m + 0.01], [0, m - 0.05], [0.065, m + 0.01], [0.13, m - 0.06]], { w: 1.05 });
     if (t === 'fangs') for (const s of [-1, 1]) { const f = [[s * 0.05, m - 0.002], [s * 0.085, m - 0.012], [s * 0.07, m + 0.07]]; blob(r, f, '#fff'); line(r, f, { sharp: true, close: true, w: 0.8 }); }
@@ -817,7 +837,7 @@ function randomCfg(type) {
     eyes: cat ? pick(['slit', 'ring', 'wide', 'sleepy', 'almond', 'closed']) : pick(OPTS.eyes.filter(e => e !== 'slit')),
     brows: maybe(0.6, OPTS.brows.slice(1)),
     nose: cat ? 'cat' : pick(OPTS.nose.filter(n => n !== 'cat')),
-    mouth: cat ? pick(['cat', 'fangs', 'o', 'open']) : pick(OPTS.mouth.filter(m => m !== 'cat' && m !== 'fangs')),
+    mouth: cat ? pick(['cat', 'fangs', 'o', 'open', 'rose']) : pick(OPTS.mouth.filter(m => m !== 'cat' && m !== 'fangs')),
     ears: cat ? 'cat' : pick(['normal', 'normal', 'big', 'small', 'pointy', 'gauged']),
     hair: cat ? pick(['tabby', 'patches', 'tux', 'mohawk', 'mohawk', 'spiky', 'liberty']) : pick(['mohawk', 'mohawk', 'liberty', 'liberty', 'spiky', 'spiky', 'buzz', 'crop', 'flattop', 'hatched', 'curly', 'afro', 'bowl', 'slick', 'long', 'bun']),
     beard: cat ? 'none' : maybe(0.4, OPTS.beard.slice(1)),
