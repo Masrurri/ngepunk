@@ -6,11 +6,18 @@ const STORE = 'ngepunk';
 let cfg = load();
 const view = { yaw: 0.45, pitch: 0.06, tilt: 0 };
 let spin = false, tab = 'base', dirty = true, thumbs = [];
-function load() { try { const s = JSON.parse(localStorage.getItem(STORE)); if (s) return { ...DEFAULT, ...s }; } catch (e) { } return { ...DEFAULT }; }
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE));
+    if (s && s.hat === 'hijab') Object.assign(s, { hat: 'none', veil: 'hijab', veilColor: s.hatColor }); // hijab used to be a hat
+    if (s) return { ...DEFAULT, ...s };
+  } catch (e) { }
+  return { ...DEFAULT };
+}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch (e) { } }
 function set(p) { Object.assign(cfg, p); save(); dirty = true; refresh(); }
 
-const LABELS = { peci1: 'peci low', peci2: 'peci mid', peci3: 'peci tall', lensmask: 'lens mask' };
+const LABELS = { peci1: 'peci low', peci2: 'peci mid', peci3: 'peci tall', lensmask: 'lens mask', bogo: 'helm bogo' };
 const TABS = [
   { id: 'base', label: 'Base', groups: [['type', 'Character'], ['head', 'Head shape'], ['ears', 'Ears']] },
   { id: 'body', label: 'Body', groups: [['body', 'Half body']] },
@@ -18,10 +25,10 @@ const TABS = [
   { id: 'face', label: 'Nose + mouth', groups: [['nose', 'Nose'], ['mouth', 'Mouth']], sliders: [['featY', 'Feature height', -0.2, 0.25, 0.01], ['featScale', 'Feature size', 0.7, 1.4, 0.01]] },
   { id: 'hair', label: 'Hair + fur', groups: [['hair', 'Hair / fur pattern']] },
   { id: 'beard', label: 'Facial hair', groups: [['beard', 'Beard'], ['stache', 'Mustache']] },
-  { id: 'hat', label: 'Headwear', groups: [['hat', 'Hats, masks + culture']] },
+  { id: 'hat', label: 'Headwear', groups: [['veil', 'Hijab — layers under any headwear'], ['hat', 'Hats, masks + culture']] },
   { id: 'eyewear', label: 'Eyewear', groups: [['eyewear', 'Eyewear + masks']] },
   { id: 'bits', label: 'Punk bits', groups: [['extras', 'Extras — pick many']] },
-  { id: 'color', label: 'Color', colors: [['skin', 'Skin / fur'], ['hairColor', 'Hair'], ['topColor', 'Clothes'], ['hatColor', 'Headwear, masks + tie']], seg: [['fill', 'Fill style']] },
+  { id: 'color', label: 'Color', colors: [['skin', 'Skin / fur'], ['hairColor', 'Hair'], ['topColor', 'Clothes'], ['hatColor', 'Headwear, masks + tie'], ['veilColor', 'Hijab']], seg: [['fill', 'Fill style']] },
   { id: 'scene', label: 'Scene', seg: [['bg', 'Background']], toggles: [['shade', 'Halftone shading'], ['boil', 'Line boil (on twos)'], ['dieCut', 'Die-cut sticker'], ['cutGrid', 'Die-cut grid']], sliders: [['weight', 'Ink weight', 0.8, 4, 0.1], ['wobble', 'Wobble', 0, 3, 0.1], ['mis', 'Misregister', 0, 14, 0.5], ['cutSize', 'Die-cut size', 4, 36, 1]], colorsAfter: [['cutColor', 'Die-cut color', ['#ffffff', ...COLORS.slice(1)]]] },
 ];
 function variant(key, val) {
@@ -91,7 +98,7 @@ function paint(canvas, c, o = {}) {
 }
 function drawThumbs() {
   for (const t of thumbs) {
-    const H = t.c.height, bodyish = t.key === 'body', tall = ['hair', 'hat', 'type', 'ears'].includes(t.key);
+    const H = t.c.height, bodyish = t.key === 'body', tall = ['hair', 'hat', 'veil', 'type', 'ears'].includes(t.key);
     paint(t.c, variant(t.key, t.v), { bg: '#fff', cy: bodyish ? H * 0.3 : tall ? H * 0.56 : H * 0.5, S: bodyish ? H * 0.17 : tall ? H * 0.27 : H * 0.34 });
   }
 }

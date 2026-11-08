@@ -22,8 +22,9 @@ const OPTS = {
   hair: ['bald', 'buzz', 'crop', 'flattop', 'slick', 'hatched', 'curly', 'afro', 'bowl', 'mohawk', 'liberty', 'spiky', 'long', 'bun', 'tabby', 'patches', 'tux'],
   beard: ['none', 'stubble', 'goatee', 'full', 'chinstrap', 'chops', 'soul'],
   stache: ['none', 'chevron', 'pencil', 'handlebar', 'walrus', 'curly'],
-  hat: ['none', 'beanie', 'pompom', 'cap', 'flatcap', 'headband', 'bandana', 'cowl', 'lensmask', 'luchador', 'turban', 'peci1', 'peci2', 'peci3', 'blangkon', 'hijab'],
-  eyewear: ['none', 'round', 'square', 'shades', 'monocle', 'patch', 'visor', 'domino'],
+  hat: ['none', 'beanie', 'pompom', 'cap', 'flatcap', 'headband', 'bandana', 'cowl', 'lensmask', 'luchador', 'turban', 'peci1', 'peci2', 'peci3', 'blangkon', 'bogo'],
+  eyewear: ['none', 'round', 'square', 'shades', 'monocle', 'patch', 'visor', 'domino', 'cateye'],
+  veil: ['none', 'hijab'],
   extras: ['nosering', 'browbar', 'hoops', 'safetypin', 'lipring', 'teardrop', 'tribal', 'barbwire', 'star', 'spikeband', 'choker', 'scar', 'bandaid', 'freckles', 'eyeblack', 'whiskers'],
   body: ['none', 'stick', 'tee', 'stripes', 'hoodie', 'jacket', 'turtleneck', 'suit'],
   fill: ['offset', 'scribble', 'flat'],
@@ -39,7 +40,7 @@ const DEFAULT = {
   hair: 'mohawk', beard: 'stubble', stache: 'none', hat: 'none', eyewear: 'none', extras: ['safetypin', 'nosering'],
   body: 'none', skin: '#f3c9a8', hairColor: '#d9443a', topColor: null, hatColor: '#d9443a',
   fill: 'offset', bg: 'grid', shade: true, boil: true, weight: 2.2, wobble: 1.2, mis: 6,
-  eyeGap: 0.36, featY: 0, featScale: 1, seed: 7, dieCut: false, cutSize: 14, cutColor: '#ffffff', cutGrid: true,
+  eyeGap: 0.36, featY: 0, featScale: 1, seed: 7, veil: 'none', veilColor: '#9db3d1', dieCut: false, cutSize: 14, cutColor: '#ffffff', cutGrid: true,
 };
 
 const SHAPES = {
@@ -307,7 +308,8 @@ const HAIR = {
   bun: { f: 0.45, b: -0.3, sd: 0.25, tex: 'strands', h: 0.04, bun: true },
 };
 const HATS_COVER = new Set(['beanie', 'pompom', 'cap', 'flatcap', 'bandana', 'turban', 'peci1', 'peci2', 'peci3', 'blangkon']);
-const HIDE_HAIR = new Set(['cowl', 'lensmask', 'luchador', 'hijab']);
+const HIDE_HAIR = new Set(['cowl', 'lensmask', 'luchador', 'bogo']);
+const hidesHair = c => HIDE_HAIR.has(c.hat) || c.veil === 'hijab';
 function spikeDirs(kind, seed) {
   const R = mulberry(seed + 11), o = [];
   if (kind === 'liberty') { for (let i = 0; i < 9; i++) { const lon = -1.1 + i * 0.55 + (R() - 0.5) * 0.15, lat = 1.15 - Math.abs(i - 4) * 0.08 + (i % 2) * 0.12; o.push([Math.sin(lon) * Math.cos(lat), Math.sin(lat), Math.cos(lon) * Math.cos(lat), 0.6 + R() * 0.25, 0.09]); } }
@@ -514,6 +516,20 @@ function eyewear(r) {
     }
     line(r, curve(-g + 0.14, g - 0.14, x => -0.02 - 0.03 * (1 - (x / (g - 0.14 || 1)) ** 2), h + 0.01, 6), { w: 1.1 }, -0.1);
   }
+  if (t === 'cateye') { // oval lenses whose outer top corner tapers up into a soft point
+    for (const s of [-1, 1]) {
+      const pts = [];
+      for (let i = 0; i < 28; i++) {
+        const a = i / 28 * TAU, ox = Math.cos(a), oy = Math.sin(a);
+        const tip = Math.max(0, s * ox * 0.75 - oy * 0.66) ** 3; // strongest toward the outer-upper corner
+        pts.push([s * g + ox * (0.15 + tip * 0.07), oy * (0.1 + tip * 0.02) - tip * 0.045, h]);
+      }
+      line(r, pts, { close: true, w: 1.8 }, -0.1);
+      line(r, [[s * g - 0.07, -0.05, h], [s * g - 0.01, -0.07, h]], { w: 0.6, single: true }, -0.1);
+      temple(s);
+    }
+    line(r, curve(-g + 0.15, g - 0.15, x => -0.03 - 0.025 * (1 - (x / (g - 0.15 || 1)) ** 2), h + 0.01, 6), { w: 1.4 }, -0.1);
+  }
   if (t === 'monocle') { line(r, circ(g, 0, 0.13, 0.13, h, 20), { close: true, w: 1.8 }, -0.1); line(r, [[g + 0.02, 0.13, h], [g + 0.12, 0.45, 0.04], [g + 0.25, 0.85, 0.02]], { w: 0.6 }, -0.1); }
   if (t === 'patch') {
     blob(r, circ(-g, 0, 0.15, 0.12, 0.03), INK, -0.1);
@@ -548,15 +564,8 @@ function hat(r, phase) {
     const p = pathOf(pts); ctx.fillStyle = r.paper; ctx.fill(p); colorFill(r, p, col); ctx.globalAlpha = 0.25; ctx.fillStyle = INK; ctx.fill(p); ctx.globalAlpha = 1;
     stroke(r, pts, { close: true, w: 1.15 });
   };
-  const brimLen = { cap: 0.5, flatcap: 0.28 }[t];
+  const brimLen = { cap: 0.5, flatcap: 0.28, bogo: 0.2 }[t];
   if (brimLen && phase === 'back' && !front) brim(brimLen, 0.32); // facing away → brim goes behind the head
-  if (t === 'hijab' && phase === 'back') { // drape over neck/shoulders, behind the head
-    const S = r.S, x = r.cx - Math.sin(r.yaw) * 0.15 * S, y = r.cy;
-    const pts = [{ x: x - 0.98 * S, y: y - 0.2 * S }, { x: x - 1.1 * S, y: y + 0.9 * S }, { x: x - 1.45 * S, y: y + 1.85 * S }, { x: x - 0.5 * S, y: y + 2.05 * S }, { x: x + 0.5 * S, y: y + 2.05 * S }, { x: x + 1.45 * S, y: y + 1.85 * S }, { x: x + 1.1 * S, y: y + 0.9 * S }, { x: x + 0.98 * S, y: y - 0.2 * S }];
-    const p = pathOf(pts); ctx.fillStyle = r.paper; ctx.fill(p); colorFill(r, p, col);
-    for (const s of [-1, 1]) stroke(r, [{ x: x + s * 0.55 * S, y: y + 1.0 * S }, { x: x + s * 0.8 * S, y: y + 1.5 * S }, { x: x + s * 0.9 * S, y: y + 1.95 * S }], { w: 0.6, single: true });
-    stroke(r, pts, { close: true, w: 1.2 });
-  }
   if (t === 'blangkon') { const K = r.dir(0, 0.05, -1, 0.1); if ((K.z > 0) === (phase === 'front')) knob(r, K, col); }
   if (phase === 'back') return;
   const crown =(lo, h, tex) => {
@@ -623,11 +632,36 @@ function hat(r, phase) {
       stroke(r, top.filter(p => p.z > -0.05), { w: 1.2 });
     }
   }
+  if (t === 'bogo') { // Indonesian helm bogo: retro open-face shell, rubber trim, snap peak, racing stripe, chin strap
+    const lo = lon => 0.3 - c.featY * 0.5 - 0.72 * sstep(0.45, 1.35, Math.abs(lon)), H = 0.15;
+    const shell = crown(lo, H, () => {
+      for (const base of [0, PI]) for (const d of [-0.09, 0.09]) { const pts = []; for (let k = 0; k <= 12; k++) pts.push(r.surf(base + d, lo(base) + 0.08 + (PI / 2 - 0.1 - lo(base)) * k / 12, H)); fline(r, pts, { w: 3.2, color: '#f4f1ea', single: true }); }
+    });
+    if (shell) {
+      const trim = band(r, -PI, PI, lo, lon => lo(lon) + 0.07, H + 0.01, 72, 2);
+      if (trim) { ctx.fillStyle = INK; ctx.fill(trim.path); }
+      const glint = []; for (let k = 0; k <= 8; k++) glint.push(r.surf(-0.75 + k * 0.06, 0.95 + k * 0.025, H + 0.01)); fline(r, glint, { w: 2.2, color: '#ffffff', single: true });
+      ctx.fillStyle = r.paper; for (const lon of [-0.38, 0, 0.38]) { const p = r.surf(lon, lo(lon) + 0.13, H + 0.01); if (p.z > 0.05) { dot(r, p, r.S * 0.022); stroke(r, [p, { x: p.x + 0.5, y: p.y }], { w: 0.6, single: true }); } }
+      if (front) brim(0.2, lo(0) + 0.02);
+      for (const s of [-1, 1]) line(r, [[s * 1.22, 0.28, 0.03], [s * 1.0, 0.6, 0.025], [s * 0.6, 0.8, 0.02], [s * 0.2, 0.88, 0.02], [0, 0.9, 0.02]], { w: 1.8 }, -0.05);
+    }
+  }
   if (t === 'blangkon') crown(lon => 0.3 - 0.45 * (1 - Math.cos(lon)) / 2 - c.featY * 0.5, 0.05, () => { stipple(r, 1500); hatch(r, 0.8, 10, 0.4); });
-  if (t === 'hijab') {
-    const mc = col;
+}
+// Hijab is its own layer (not a hat), so caps, peci, helmets etc. can sit on top of it.
+function veil(r, phase) {
+  const c = r.c, ctx = r.ctx, col = c.veilColor;
+  if (c.veil !== 'hijab') return;
+  if (phase === 'back') { // drape over neck/shoulders, behind the head
+    const S = r.S, x = r.cx - Math.sin(r.yaw) * 0.15 * S, y = r.cy;
+    const pts = [{ x: x - 0.98 * S, y: y - 0.2 * S }, { x: x - 1.1 * S, y: y + 0.9 * S }, { x: x - 1.45 * S, y: y + 1.85 * S }, { x: x - 0.5 * S, y: y + 2.05 * S }, { x: x + 0.5 * S, y: y + 2.05 * S }, { x: x + 1.45 * S, y: y + 1.85 * S }, { x: x + 1.1 * S, y: y + 0.9 * S }, { x: x + 0.98 * S, y: y - 0.2 * S }];
+    const p = pathOf(pts); ctx.fillStyle = r.paper; ctx.fill(p); colorFill(r, p, col);
+    for (const s of [-1, 1]) stroke(r, [{ x: x + s * 0.55 * S, y: y + 1.0 * S }, { x: x + s * 0.8 * S, y: y + 1.5 * S }, { x: x + s * 0.9 * S, y: y + 1.95 * S }], { w: 0.6, single: true });
+    stroke(r, pts, { close: true, w: 1.2 });
+  }
+  else {
     const gr = band(r, -PI, PI, () => -PI / 2 + 0.05, () => PI / 2, 0.09, 72, 14);
-    if (gr) { ctx.fillStyle = r.paper; ctx.fill(gr.path); colorFill(r, gr.path, mc); hullStroke(r, gr.G.flat(), { w: 1.25 }); }
+    if (gr) { ctx.fillStyle = r.paper; ctx.fill(gr.path); colorFill(r, gr.path, col); hullStroke(r, gr.G.flat(), { w: 1.25 }); }
     const sq = lon => Math.sqrt(Math.max(0, 1 - (lon / 0.66) ** 2));
     const face = band(r, -0.66, 0.66, lon => -0.1 - c.featY - 0.66 * sq(lon), lon => -0.1 - c.featY + 0.56 * sq(lon), 0.01, 28, 10);
     if (face) {
@@ -654,7 +688,7 @@ function extras(r, nb) {
   if (ex.has('lipring')) line(r, circ(0.1, 0.57, 0.032, 0.032, 0.02, 12), { close: true, w: 1 });
   if (ex.has('browbar')) { ctx.fillStyle = INK; const a = r.F(g + 0.06, -0.27, 0.02), b = r.F(g + 0.12, -0.13, 0.02); if (a.z > 0 && b.z > 0) { stroke(r, [a, b], { w: 0.8, single: true }); dot(r, a, S * 0.016); dot(r, b, S * 0.016); } }
   for (const s of [-1, 1]) {
-    const p = lobe(s); if (p.z < -0.1 || HIDE_HAIR.has(c.hat)) continue;
+    const p = lobe(s); if (p.z < -0.1 || hidesHair(c)) continue;
     if (ex.has('hoops')) { const pts = []; for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; pts.push({ x: p.x + Math.cos(a) * S * 0.07, y: p.y + S * 0.07 + Math.sin(a) * S * 0.075 }); } stroke(r, pts, { close: true, w: 1.1 }); }
     if (ex.has('safetypin') && s < 0) {
       const a = 0.25, ca = Math.cos(a), sa = Math.sin(a), T = (x, y) => ({ x: p.x + (x * ca - y * sa) * S, y: p.y + (x * sa + y * ca) * S });
@@ -674,7 +708,7 @@ function extras(r, nb) {
     for (let lon = -PI; lon < PI; lon += 0.28) { const a = r.surf(lon - 0.04, lat - 0.05, 0.015), b = r.surf(lon + 0.04, lat + 0.05, 0.015), cc = r.surf(lon - 0.04, lat + 0.05, 0.015), d = r.surf(lon + 0.04, lat - 0.05, 0.015); if (a.z > 0.05 && b.z > 0.05) { stroke(r, [a, b], { w: 0.8, single: true }); stroke(r, [cc, d], { w: 0.8, single: true }); } }
   }
   if (ex.has('spikeband')) { // studded spikes ring around the temples (sits over any headwear)
-    const lat = 0.5 - c.featY * 0.5, h = HATS_COVER.has(c.hat) || HIDE_HAIR.has(c.hat) ? 0.12 : 0.04;
+    const lat = 0.5 - c.featY * 0.5, h = HATS_COVER.has(c.hat) || hidesHair(c) ? 0.12 : 0.04;
     const pts = []; for (let i = 0; i <= 72; i++) pts.push(r.surf(-PI + TAU * i / 72, lat, h)); fline(r, pts, { w: 3.4 }); fline(r, pts, { w: 1.3, color: '#f4f1ea', single: true });
     for (let lon = -PI; lon < PI; lon += 0.4) { const cl = Math.cos(lat), d = norm([Math.sin(lon) * cl, Math.sin(lat) + 0.55, Math.cos(lon) * cl]); if (r.surf(lon, lat).z > 0.05) spike(r, d, 0.32 + h, 0.05, '#f4f1ea'); }
   }
@@ -759,16 +793,16 @@ function hood(r) {
 function renderChar(ctx, c, o) {
   const r = makeR(ctx, c, o); silhouette(r);
   const back = Math.cos(o.yaw) * Math.cos(o.pitch) < -0.15, nb = o.cy + 1.12 * o.S, ex = new Set(c.extras);
-  const hh = HIDE_HAIR.has(c.hat);
+  const hh = hidesHair(c);
   if (c.hair === 'long' && !back && !hh) curtain(r);
   drawBody(r, nb, back);
-  hat(r, 'back'); if (!hh) ears(r, 'back'); if (!hh) hair(r, 'back');
+  veil(r, 'back'); hat(r, 'back'); if (!hh) ears(r, 'back'); if (!hh) hair(r, 'back');
   headBase(r);
   if (!hh) ears(r, 'front');
   facialHair(r);
   if (!hh) hair(r, 'front');
   eyes(r); nose(r); mouth(r);
-  eyewear(r); hat(r, 'front'); extras(r, nb);
+  eyewear(r); veil(r, 'front'); hat(r, 'front'); extras(r, nb);
   if (back && c.hair === 'long' && !hh) curtain(r);
   if (back && c.body === 'hoodie') hood(r);
   return r;
@@ -842,7 +876,7 @@ function randomCfg(type) {
     hair: cat ? pick(['tabby', 'patches', 'tux', 'mohawk', 'mohawk', 'spiky', 'liberty']) : pick(['mohawk', 'mohawk', 'liberty', 'liberty', 'spiky', 'spiky', 'buzz', 'crop', 'flattop', 'hatched', 'curly', 'afro', 'bowl', 'slick', 'long', 'bun']),
     beard: cat ? 'none' : maybe(0.4, OPTS.beard.slice(1)),
     stache: cat ? 'none' : maybe(0.25, OPTS.stache.slice(1)),
-    hat: R() < 0.5 ? 'none' : R() < 0.5 ? pick(['turban', 'peci1', 'peci2', 'peci3', 'blangkon', 'hijab']) : pick(['beanie', 'pompom', 'cap', 'flatcap', 'headband', 'bandana', 'cowl', 'lensmask', 'luchador']),
+    hat: R() < 0.5 ? 'none' : R() < 0.5 ? pick(['turban', 'peci1', 'peci2', 'peci3', 'blangkon', 'bogo']) : pick(['beanie', 'pompom', 'cap', 'flatcap', 'headband', 'bandana', 'cowl', 'lensmask', 'luchador']),
     eyewear: maybe(0.35, OPTS.eyewear.slice(1)),
     extras: punkBits(R, pick).concat(cat ? ['whiskers'] : []),
     body: cfg.body,
@@ -850,6 +884,7 @@ function randomCfg(type) {
     hairColor: R() < 0.5 ? null : pick(COLORS.slice(3)),
     topColor: R() < 0.4 ? null : pick(COLORS.slice(5)),
     hatColor: pick(COLORS.slice(5)),
+    veil: !cat && R() < 0.18 ? 'hijab' : 'none', veilColor: pick(COLORS.slice(1)),
     eyeGap: 0.28 + R() * 0.16, featY: (R() - 0.5) * 0.18, featScale: 0.85 + R() * 0.3,
     seed: Math.floor(R() * 1e6),
   };

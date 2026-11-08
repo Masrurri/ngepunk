@@ -14,7 +14,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 
 ## What's in the box
 
-**134 parts across 13 categories**, all mixable, all rotatable:
+**136 parts across 13 categories**, all mixable, all rotatable:
 
 | Category | Count | Highlights |
 |---|---:|---|
@@ -28,8 +28,8 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 | Hair + fur | 17 | mohawk, liberty spikes, afro, bowl, long, bun, tabby / patches / tux fur |
 | Beard | 7 | stubble, goatee, full, chinstrap, chops, soul patch |
 | Mustache | 6 | chevron, pencil, handlebar, walrus, curly |
-| Headwear | 16 | beanie, cap, flat cap, bandana, hero cowl, lens mask, luchador, **turban, peci low / mid / tall, blangkon, hijab** |
-| Eyewear | 8 | round, square, shades, monocle, eye patch, visor, domino mask |
+| Headwear | 17 | beanie, cap, flat cap, bandana, hero cowl, lens mask, luchador, **turban, peci low / mid / tall, blangkon, helm bogo**, plus a **hijab** layer that works under any of them |
+| Eyewear | 9 | round, square, shades, cat-eye, monocle, eye patch, visor, domino mask |
 | Punk bits | 16 | nose ring, brow bar, hoops, safety pin, lip ring, teardrop, tribal, barbed wire, spike crown, studded choker, scar… (stack as many as you want) |
 | Half body | 8 | none, stick + bow tie, tee, stripes, hoodie, punk jacket, turtleneck, suit |
 
