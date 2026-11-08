@@ -102,6 +102,16 @@ Open **http://localhost:5177** and start making faces.
 
 ---
 
+## License — no commercial use
+
+**[PolyForm Noncommercial 1.0.0](LICENSE)** · © 2026 alviy
+
+Use it, fork it, remix it, print stickers for your friends, put it in your portfolio, learn from the code —
+all good. **Selling it or using it for a business is not**, unless you get permission first.
+Hobby, personal, study, research, charity and school use are fine. Read [LICENSE](LICENSE) for the exact words.
+
+---
+
 <p align="center">
   <img src="assets/creator-sticker.png" alt="Creator sticker: green face, blue cap, grey suit, blue tie" width="200">
 </p>
