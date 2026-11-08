@@ -74,7 +74,7 @@
   /* collection */
   .coll { grid-area:coll; border-left:1.5px solid var(--line); display:flex; flex-direction:column; min-height:0; }
   .coll-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:12px 20px 12px 14px; border-bottom:1.5px solid #000; gap:8px; }
-  .coll-hint { font-family:'Space Mono',monospace; font-size:10px; background:#000; color:#fff; padding:2px 6px; }
+  .coll-hint { order:3; font-family:'Space Mono',monospace; font-size:10px; background:#000; color:#fff; padding:2px 6px; }
   .coll-head h2 { font-family:'Space Mono',monospace; font-weight:700; font-size:12px; letter-spacing:.14em; text-transform:uppercase; margin:0; }
   .coll-head button { padding:5px 10px; font-family:'Space Mono',monospace; font-size:11px; box-shadow:2px 2px 0 #000; }
   .coll-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; padding:12px 20px 30px 14px; overflow:auto; scrollbar-gutter:stable; }
@@ -108,6 +108,7 @@
     .coll { display:none; min-width:0; border-left:none; border-bottom:1.5px solid #000; }
     .coll-head { justify-content:flex-start; border-bottom:none; padding:12px 20px 0 16px; }
     .coll-head h2 { display:none; }
+    .coll-hint { order:0; }
     .coll.open { display:flex; }
     .coll-grid { grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:96px; overflow-x:auto; overflow-y:hidden; padding:12px 20px 14px 16px; scroll-padding-inline:16px; }
     .frame, .dock { width:100%; }
@@ -150,7 +151,7 @@
       <div class="dock" id="dock"></div>
     </section>
     <aside class="coll" id="coll" aria-label="Collection">
-      <div class="coll-head"><h2>Collection</h2><button id="shuffle">Randomize ↻</button><span class="coll-hint">click to customize</span></div>
+      <div class="coll-head"><h2>Collection</h2><span class="coll-hint">click to customize</span><button id="shuffle">Randomize ↻</button></div>
       <div class="coll-grid" id="collGrid"></div>
     </aside>
   </main>
