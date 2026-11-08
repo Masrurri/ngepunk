@@ -1,3 +1,7 @@
+<p align="center"><img src="assets/social-preview.png" alt="NGEPUNK — a spiky-haired grey head with glasses and a green-faced guy in a blue cap and grey suit, drawn in wobbly ink on grid paper" width="100%"></p>
+
+<p align="center"><img src="assets/logo.webp" alt="ngepunk logo: grey head, spiky brown hair, round glasses, brown mustache" width="160"></p>
+
 # NGEPUNK
 
 > **Vibe coded, no group discussion.**
@@ -99,6 +103,11 @@ Open **http://localhost:5177** and start making faces.
 | Save | Export PNG |
 
 ---
+
+<p align="center">
+  <img src="assets/creator-head.webp" alt="Creator head: green face, blue cap" width="180">
+  <img src="assets/creator.webp" alt="Creator half body: green face, blue cap, grey suit, blue tie" width="180">
+</p>
 
 Vibe coded by **alviy.dev@gmail.com** · Instagram **@rurrii** · Threads **@rurrii**
 
