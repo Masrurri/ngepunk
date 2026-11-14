@@ -1,0 +1,12 @@
+{
+  "name": "ngepunk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch & node serve.cjs",
+    "start": "node serve.cjs"
+  },
+  "dependencies": { "preact": "^11.2.0" },
+  "devDependencies": { "esbuild": "^0.25.0" }
+}

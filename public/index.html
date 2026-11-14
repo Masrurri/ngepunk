@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ngepunk · wobbly ink heads</title>
+<meta name="description" content="Wobbly ink heads that turn like 3D objects. Shuffle, tweak, export a PNG.">
+<meta property="og:title" content="ngepunk">
+<meta property="og:description" content="Wobbly ink heads that turn like 3D objects. Shuffle, tweak, export a PNG.">
+<meta property="og:image" content="assets/social-preview.png">
+<link rel="icon" href="assets/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+<style>
+/* always dark: the same tokens as alviy.dev's dark theme */
+:root { color-scheme: dark; --bg: #111111; --fg: #F0F0EE; --ink2: #C9C7C0; --mute: #A9A79F; --rule: #2E2E2C; --panel: #1A1A19;
+  --blue: #9CC4FF; --lime: #D4F36B; --salmon: #F2836B; --grid: rgba(244,243,239,.05); --play: #D4F36B; --on-play: #111111; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid var(--rule); }
+::-webkit-scrollbar-thumb { background: var(--fg); border: 3px solid var(--bg); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+::-webkit-scrollbar-corner { background: var(--bg); }
+@supports not selector(::-webkit-scrollbar) { html { scrollbar-width: thin; scrollbar-color: var(--fg) var(--bg); } }
+body { margin: 0; font-family: 'JetBrains Mono', system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+/* paper grain: one small noise tile, fixed over the page, never takes clicks */
+body::after { content: ''; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+summary::-webkit-details-marker { display: none; }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>ngepunk draws every head live in JavaScript, so it needs JavaScript on.</noscript>
+<script type="module" src="app.js"></script>
+</body>
+</html>

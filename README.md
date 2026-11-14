@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/social-preview.png" alt="NGEPUNK — a spiky-haired grey head with glasses and a green-faced guy in a blue cap and grey suit, drawn in wobbly ink on grid paper" width="100%"></p>
+<p align="center"><img src="public/assets/social-preview.png" alt="NGEPUNK — a spiky-haired grey head with glasses and a green-faced guy in a blue cap and grey suit, drawn in wobbly ink on grid paper" width="100%"></p>
 # NGEPUNK
 
 > **Vibe coded, no group discussion.**
@@ -14,7 +14,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 
 ## What's in the box
 
-**136 parts across 13 categories**, all mixable, all rotatable:
+**137 parts across 13 categories**, all mixable, all rotatable:
 
 | Category | Count | Highlights |
 |---|---:|---|
@@ -24,7 +24,7 @@ Inspired by sketchbook grids of doodled heads and the Spider-Punk zine look: pho
 | Eyes | 12 | ring, dot, sleepy, wink, X, spiral, cat slit, angry… |
 | Brows | 7 | line, thick, angry, worried, unibrow… |
 | Nose | 9 | line, hook, beak, long, snub, cat… — sticks out in profile |
-| Mouth | 12 | smirk, grin, teeth, tongue, fangs, cat, rose in the teeth… |
+| Mouth | 13 | smirk, grin, teeth, tongue, fangs, cat, rose in the teeth… |
 | Hair + fur | 17 | mohawk, liberty spikes, afro, bowl, long, bun, tabby / patches / tux fur |
 | Beard | 7 | stubble, goatee, full, chinstrap, chops, soul patch |
 | Mustache | 6 | chevron, pencil, handlebar, walrus, curly |
@@ -46,58 +46,57 @@ Add colors and you're past **10²¹**. You will not run out. Neither will your f
 - **Turn it, don't redraw it.** Drag the canvas, or hit Front / ¾ / Side / Back. Spin mode turns it like a record.
 - **Line boil.** Lines re-jitter at 12 fps ("on twos"), like hand-drawn animation. Toggle it in Scene.
 - **Halftone shading** that stays fixed to the light while the head turns.
-- **Randomize** (button or the `R` key) always rolls something punk: 1–2 piercings, usually a tattoo,
+- **Shuffle** (button or the `R` key) always rolls something punk: 1–2 piercings, usually a tattoo,
   often spikes. Hijab, peci and turban included — culture and spikes are not mutually exclusive.
-- **Collection** — 24 random heads on the side (a dropdown on mobile). Click one to steal it into the editor. Randomize the whole batch whenever.
+- **Collection** — 12 random heads on top (folded on phones). Click one to steal it into the editor; your scene settings stay. Shuffle the whole batch whenever.
+- **Every part group folds open**, and its tiles show just that part on a bare head, so you see what you pick.
+- **New mouth: chomp**, a chunky striped bite under the nose.
 - **Export PNG** — 1000×1000, grain and all. Pick the **transparent** background to export a clean cut-out.
 - **Die-cut sticker** (Scene → Effects) — a sticker border around the whole character, in any color, with optional thin grid-paper rules and adjustable thickness. Pair it with transparent and you've got a ready-to-print sticker.
 - **Remembers your character** in the browser, so a refresh doesn't wipe your masterpiece.
-- **Creator card** — tap Creator in the header.
+- **Creator card** — tap "creator" in the top line.
 
 ---
 
 ## Tech
 
-No framework. No bundler. No npm install. No build step.
-
-- **Vanilla JavaScript + HTML Canvas 2D** — every stroke is computed on the fly.
+- **Preact + HTML Canvas 2D**, bundled by **esbuild** into one file. Every stroke is computed on the fly.
 - Each feature lives on a virtual head ellipsoid (longitude / latitude), gets rotated in 3D, projected flat,
   then inked with a wobbly double stroke. That's the whole trick.
-- **Google Fonts**: Space Grotesk + Space Mono.
-- **Node.js** only to serve the files locally (a tiny static server, zero dependencies).
+- **JetBrains Mono**, always dark, in the same look as [alviy.dev](https://alviy.dev).
 
 | File | What it does |
 |---|---|
-| `index.html` | layout + styles |
-| `app.js` | the drawing engine: projection, ink, hair, faces, hats, bodies, backgrounds |
-| `ui.js` | panels, collection, creator card, render loop |
-| `serve.js` | tiny local server |
-| `assets/` | logo + creator drawings |
+| `src/engine.js` | the drawing engine: projection, ink, hair, faces, hats, bodies, backgrounds |
+| `src/Punk.jsx` | the page: collection, canvas, pose, part sections, creator card, render loop |
+| `public/` | what gets deployed: `index.html`, the built `app.js`, `assets/` |
+| `build.mjs` | bundles `src/` into `public/app.js` |
+| `serve.cjs` | tiny local server for `public/` |
 
 ---
 
 ## Run it
 
-You need **[Node.js](https://nodejs.org)** (any recent version) and a browser. That's it.
+You need **[Node.js](https://nodejs.org)** and a browser.
 
 ```bash
 git clone https://github.com/Masrurri/ngepunk.git
 cd ngepunk
-node serve.js
+npm install
+npm run build
+npm start
 ```
 
-Open **http://localhost:5177** and start making faces.
-
-> Opening `index.html` by double-clicking won't work in some browsers. They block the scripts from
-> `file://`. Use the server.
+Open **http://localhost:5177**. `npm run dev` rebuilds on save. After changing `src/`, run `npm run build`
+and commit `public/app.js` too: Cloudflare serves `public/` as it is (`wrangler deploy`).
 
 **Controls**
 
 | Do | How |
 |---|---|
-| Rotate | drag the canvas, or ← → keys |
-| Randomize | `R` or the Randomize button |
-| Pick parts | tabs on the left, tap a tile |
+| Rotate | drag the canvas, or the Pose sliders |
+| Shuffle | `R` or the Shuffle button |
+| Pick parts | open a section on the right, tap a tile |
 | Save | Export PNG |
 
 ---
@@ -113,7 +112,7 @@ Hobby, personal, study, research, charity and school use are fine. Read [LICENSE
 ---
 
 <p align="center">
-  <img src="assets/creator-sticker.png" alt="Creator sticker: green face, blue cap, grey suit, blue tie" width="200">
+  <img src="public/assets/creator-sticker.png" alt="Creator sticker: green face, blue cap, grey suit, blue tie" width="200">
 </p>
 
 <p align="center">

@@ -1,8 +1,0 @@
-.git/
-.claude/
-.wrangler/
-node_modules/
-.gitignore
-.assetsignore
-wrangler.jsonc
-serve.js

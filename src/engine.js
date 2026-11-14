@@ -1,4 +1,5 @@
-'use strict';
+// Ported from PunkStudio (ngepunk, D:/exploration/PunkStudio/app.js). Same author, PolyForm Noncommercial.
+// Changes: ES module exports, randomCfg takes the base config instead of reading a global, dieCut moved in from ui.js.
 // ngepunk — hand-drawn 2.5D character maker.
 // Every feature is defined on a head ellipsoid (lon/lat), rotated, then projected and inked
 // with wobbly strokes, so a flat 2D drawing turns like a 3D object.
@@ -18,7 +19,7 @@ const OPTS = {
   eyes: ['ring', 'dot', 'almond', 'sleepy', 'wide', 'uneven', 'closed', 'wink', 'x', 'spiral', 'slit', 'angry'],
   brows: ['none', 'line', 'thick', 'angry', 'worried', 'unibrow', 'raised'],
   nose: ['line', 'hook', 'button', 'triangle', 'beak', 'snub', 'long', 'cat', 'none'],
-  mouth: ['line', 'smile', 'frown', 'open', 'grin', 'o', 'smirk', 'tongue', 'teeth', 'cat', 'fangs', 'rose'],
+  mouth: ['line', 'smile', 'frown', 'open', 'grin', 'o', 'smirk', 'tongue', 'teeth', 'chomp', 'cat', 'fangs', 'rose'],
   hair: ['bald', 'buzz', 'crop', 'flattop', 'slick', 'hatched', 'curly', 'afro', 'bowl', 'mohawk', 'liberty', 'spiky', 'long', 'bun', 'tabby', 'patches', 'tux'],
   beard: ['none', 'stubble', 'goatee', 'full', 'chinstrap', 'chops', 'soul'],
   stache: ['none', 'chevron', 'pencil', 'handlebar', 'walrus', 'curly'],
@@ -466,6 +467,15 @@ function mouth(r) {
     }
   }
   if (t === 'o') { blob(r, circ(0, m + 0.02, 0.05, 0.065)); }
+  if (t === 'chomp') { // chunky white striped bite under the nose, two humps on top (from the creator drawing)
+    const top = m - 0.11, bot = m + 0.03, w = 0.14, pts = [];
+    for (let i = 0; i <= 12; i++) { const x = -w + 2 * w * i / 12; pts.push([x, top + 0.03 * Math.abs(Math.sin(x / w * PI))]); }
+    pts.push([w, bot - 0.025], [w * 0.75, bot], [-w * 0.75, bot], [-w, bot - 0.025]);
+    if (blob(r, pts, '#fff')) {
+      line(r, pts, { close: true, w: 1.3 });
+      for (let x = -w + 0.035; x < w - 0.015; x += 0.035) line(r, [[x, top + 0.035], [x, bot - 0.012]], { w: 0.6, single: true });
+    }
+  }
   if (t === 'grin' || t === 'teeth') {
     const w = t === 'grin' ? 0.2 : 0.13, h = t === 'grin' ? 0.1 : 0.07;
     const box = [[-w, m - h / 2], [w, m - h / 2], [w * 0.9, m + h / 2], [-w * 0.9, m + h / 2]];
@@ -861,7 +871,7 @@ function punkBits(R, pick) {
   for (const e of ['scar', 'bandaid', 'freckles', 'eyeblack']) if (R() < 0.1) out.add(e);
   return [...out];
 }
-function randomCfg(type) {
+function randomCfg(type, cfg = DEFAULT) {
   const R = Math.random, pick = a => a[Math.floor(R() * a.length)], maybe = (p, a) => R() < p ? pick(a) : 'none';
   type = type || (R() < 0.25 ? 'cat' : 'human');
   const cat = type === 'cat';
@@ -891,3 +901,47 @@ function randomCfg(type) {
   return c;
 }
 
+
+// Sticker border: stamp the character's silhouette in a ring around itself, optionally ruled like grid paper. (from ui.js)
+const silCv = typeof document !== 'undefined' ? document.createElement('canvas') : null, cutCv = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+function dieCut(ctx, src, rad, color, gridOn) {
+  const W = src.width, H = src.height;
+  for (const c of [silCv, cutCv]) if (c.width !== W) { c.width = W; c.height = H; }
+  const s = silCv.getContext('2d'), t = cutCv.getContext('2d');
+  t.globalCompositeOperation = 'source-over'; t.clearRect(0, 0, W, H);
+  const stamp = (col, r) => {
+    s.globalCompositeOperation = 'source-over'; s.clearRect(0, 0, W, H); s.drawImage(src, 0, 0);
+    s.globalCompositeOperation = 'source-in'; s.fillStyle = col; s.fillRect(0, 0, W, H);
+    for (let k = 0; k < 32; k++) { const a = k / 32 * TAU; t.drawImage(silCv, Math.cos(a) * r, Math.sin(a) * r); }
+  };
+  stamp('rgba(0,0,0,0.22)', rad + 2); stamp(color, rad);
+  if (gridOn) {
+    t.globalCompositeOperation = 'source-atop'; t.strokeStyle = 'rgba(0,0,0,0.14)'; t.lineWidth = 1; t.beginPath();
+    for (let x = 0.5; x < W; x += 20) { t.moveTo(x, 0); t.lineTo(x, H); }
+    for (let y = 0.5; y < H; y += 20) { t.moveTo(0, y); t.lineTo(W, y); }
+    t.stroke(); t.globalCompositeOperation = 'source-over';
+  }
+  ctx.drawImage(cutCv, 0, 0);
+}
+
+// One part on its own (for option thumbnails): a faint head outline for scale, then only that part's strokes.
+function renderPart(ctx, c, o, key) {
+  if (key === 'type' || key === 'head') return renderChar(ctx, c, o);
+  const r = makeR(ctx, c, o); silhouette(r);
+  const nb = o.cy + 1.12 * o.S;
+  ctx.save(); ctx.globalAlpha = 0.16; stroke(r, r.sil, { close: true, w: 1 }); ctx.restore();
+  if (key === 'ears') { ears(r, 'back'); ears(r, 'front'); }
+  else if (key === 'eyes' || key === 'brows') eyes(r);
+  else if (key === 'nose') nose(r);
+  else if (key === 'mouth') mouth(r);
+  else if (key === 'hair') { hair(r, 'back'); hair(r, 'front'); }
+  else if (key === 'beard' || key === 'stache') facialHair(r);
+  else if (key === 'hat') { hat(r, 'back'); hat(r, 'front'); }
+  else if (key === 'veil') { veil(r, 'back'); veil(r, 'front'); }
+  else if (key === 'eyewear') eyewear(r);
+  else if (key === 'extras') extras(r, nb);
+  else if (key === 'body') drawBody(r, nb, false);
+  return r;
+}
+
+export { renderPart, renderChar, randomCfg, background, grain, paperFor, dieCut, OPTS, COLORS, DEFAULT, PRESET, PI, TAU, clamp };

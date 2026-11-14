@@ -1,8 +1,8 @@
-// Cloudflare Workers config: ngepunk is a plain static site, so it's served as static assets only.
+// Cloudflare Workers config: serves public/ as static assets (public/app.js is built from src/ with npm run build and committed).
 {
   "name": "ngepunk",
   "compatibility_date": "2025-09-01",
   "assets": {
-    "directory": "./"
+    "directory": "./public"
   }
 }
