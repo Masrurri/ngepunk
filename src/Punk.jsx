@@ -25,6 +25,14 @@ const load = () => { try { const s = JSON.parse(localStorage.getItem(STORE)); if
 const label = MONO + 'font-size:10px;letter-spacing:.08em;color:' + MUTE;
 const chip = (on) => 'min-height:34px;padding:0 10px;border:1px solid ' + (on ? INK : RULE) + ';border-radius:0;background:' + (on ? INK : 'transparent') + ';color:' + (on ? PAPER : INK) + ';' + MONO + 'font-size:12px;cursor:pointer';
 const btn = (bg, fg) => 'flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;background:' + bg + ';color:' + fg + ';border:1px solid ' + INK + ';border-radius:0;font:500 13px "JetBrains Mono",monospace;cursor:pointer;white-space:nowrap';
+// a scribble from the doodle pack, painted in the lime accent (decorative only)
+const Scr = ({ n, s = '', inline }) => <span aria-hidden="true" class={inline ? 'scr inline' : 'scr'} style={'--m:url(assets/scribbles/' + n + '.png);' + s}></span>;
+const TICKER = ['No rulers', 'No clean vectors', 'Stay crooked', 'Draw your own face', 'Printed off-register', 'Spin it', 'Break it', 'Call it art'];
+const TICK_ICONS = ['asterisk', 'sparkle', 'slash', 'bolt'];
+function Ticker() {
+  const row = TICKER.map((t, i) => <span style={'display:inline-flex;align-items:center;gap:14px;padding:0 14px;white-space:nowrap;' + MONO + 'font-size:12px;letter-spacing:.12em'}>{t.toUpperCase()}<Scr inline n={TICK_ICONS[i % TICK_ICONS.length]} s="width:16px;height:16px" /></span>);
+  return <div class="ticker" aria-label={TICKER.join(', ')} role="marquee"><div style="padding:9px 0">{row}{row}</div></div>;
+}
 const summary = 'display:flex;align-items:center;gap:10px;min-height:46px;cursor:pointer;list-style:none;' + MONO + 'font-size:11px;letter-spacing:.08em';
 
 // thumbnails: each tile shows only its part, on a bare head outline (not applied to your current head)
@@ -61,7 +69,7 @@ function Collection({ onPick }) {
   const [open] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(max-width: 760px)').matches));
   return (
     <details open={open} style={'border-top:1px solid ' + INK + ';border-bottom:1px solid ' + RULE}>
-      <summary style={summary}><span aria-hidden="true" style={'color:' + BLUE}>+</span><b style="font-weight:500">COLLECTION</b><span style={'color:' + MUTE}>{'· ' + N_COLL + ' HEADS · CLICK ONE TO EDIT'}</span></summary>
+      <summary style={summary}><span aria-hidden="true" style={'color:' + BLUE}>+</span><b style="font-weight:500">COLLECTION</b><Scr inline n="squiggle" s="--r:-6deg;width:34px;height:11px" /><span style={'color:' + MUTE}>{'· ' + N_COLL + ' HEADS · CLICK ONE TO EDIT'}</span></summary>
       <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:16px">
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px">
           {heads.map((c, i) => (
@@ -156,24 +164,34 @@ export default function Punk() {
   return (
     <div style={'max-width:1200px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,3vw,32px) 80px;color:' + INK}>
       <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:16px">
-        <div style="display:flex;flex-direction:column;gap:12px;max-width:640px">
+        <div style="position:relative;display:flex;flex-direction:column;gap:12px;max-width:640px">
+          <Scr n="asterisk" s="--r:-14deg;left:-6px;top:-36px;width:22px;height:30px" />
           <span style={MONO + 'font-size:11px;letter-spacing:.08em;color:' + BLUE}><a href="https://alviy.dev" style="color:inherit;text-decoration:underline;text-underline-offset:3px">alviy.dev</a> · ngepunk · <Creator /></span>
-          <h1 style="margin:0;font-size:clamp(22px,2.6vw,32px);font-weight:300;letter-spacing:-0.03em;line-height:1.3">Wobbly heads, drawn <span style={'border-bottom:1px solid ' + BLUE}>crooked</span> on purpose. No rulers, no clean vectors, no permission asked.</h1>
-          <span style={MONO + 'font-size:12px;color:' + MUTE}>Drag the head to turn it. Open a part to change it. Shuffle when bored.</span>
+          <h1 style="margin:0;font-size:clamp(22px,2.6vw,32px);font-weight:300;letter-spacing:-0.03em;line-height:1.3">Wobbly heads, drawn <span style="position:relative;white-space:nowrap">crooked<Scr n="wave" s="--fit:100% 100%;left:-4px;right:-4px;bottom:-9px;height:11px;--d:.3s;animation-name:scr-pop" /><Scr n="sparkle" s="--r:12deg;right:-26px;top:-16px;width:22px;height:22px;--d:.5s;animation-name:scr-pop" /></span> on purpose. No rulers, no clean vectors, no permission asked.</h1>
+          <span style={MONO + 'font-size:12px;color:' + MUTE}>Every line is drawn live, wobble by wobble. No stock art, no two heads alike. Drag the head to turn it, open a part to change it, shuffle when bored.</span>
+        </div>
+        <div aria-hidden="true" class="wide-only" style="position:relative;width:200px;height:150px;flex:none;margin-right:clamp(0px,4vw,48px)">
+          <Scr n="eye" s="--r:-4deg;left:58px;top:18px;width:96px;height:104px;--d:.2s" />
+          <Scr n="burst" s="--r:10deg;right:-6px;top:-14px;width:58px;height:54px;--d:.45s" />
+          <Scr n="hash" s="--r:-12deg;left:0;top:6px;width:34px;height:52px;--d:.6s" />
+          <Scr n="zigzag" s="--r:6deg;left:10px;bottom:-4px;width:44px;height:38px;--d:.75s" />
         </div>
       </div>
+      <div style="margin-top:clamp(20px,3vw,32px)"><Ticker /></div>
       <div style="margin-top:clamp(20px,3vw,32px)">
         <Collection onPick={(c) => { const cur = st.current.cfg, keep = {}; for (const k of SCENE_KEYS) keep[k] = cur[k]; setHist((h) => h.concat([cur]).slice(-50)); set({ ...c, ...keep }); }} />
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,40px);margin-top:clamp(20px,3vw,32px);align-items:flex-start">
         <div style={'flex:1.25 1 360px;max-width:600px;min-width:0;display:flex;flex-direction:column;gap:10px;' + (wide ? 'position:sticky;top:12px' : '')}>
           <div style="position:relative">
+            <Scr n="burst" s="--r:-10deg;left:-20px;top:-24px;width:64px;height:60px;z-index:1;--d:.4s" />
+            <Scr n="arrow" s="right:-22px;bottom:-26px;width:72px;height:46px;z-index:1;--d:.6s" />
             <canvas ref={cv} width="1000" height="1000" {...drag} aria-label="Character canvas. Drag to turn it, press R to shuffle." style={'display:block;width:100%;height:auto;outline:1px solid ' + RULE + ';cursor:grab;touch-action:none;background:' + (cfg.bg === 'transparent' ? 'repeating-conic-gradient(#2A2A29 0% 25%, #1A1A19 0% 50%) 0 0 / 24px 24px' : 'none')}></canvas>
             <span aria-hidden="true" style={'position:absolute;left:10px;bottom:8px;' + MONO + 'font-size:10px;color:' + MUTE}>drag to turn</span>
           </div>
           <div style="display:flex;gap:6px">
             <button type="button" onClick={previous} disabled={!hist.length} style={btn(PAPER, INK) + (hist.length ? '' : ';opacity:.4;cursor:default')}>Previous</button>
-            <button type="button" onClick={shuffle} style={btn(PAPER, INK)}>Shuffle</button>
+            <button type="button" onClick={shuffle} style={btn(PAPER, INK)}><Scr inline n="bolt" s="width:14px;height:16px" />Shuffle</button>
             <button type="button" onClick={exportPng} style={btn(INK, PAPER)}>Export PNG</button>
           </div>
           <details style={'border-bottom:1px solid ' + RULE}>
@@ -240,7 +258,7 @@ export default function Punk() {
               </div>
             </details>
           ))}
-          <p style={'margin:0;padding-top:14px;border-top:1px solid ' + RULE + ';' + MONO + 'font-size:11px;line-height:1.6;color:' + MUTE}>Your head is saved in this browser. Made by <a href="https://alviy.dev" style={'color:' + INK}>alviy.dev</a>.</p>
+          <p style={'margin:0;padding-top:14px;border-top:1px solid ' + RULE + ';' + MONO + 'font-size:11px;line-height:1.6;color:' + MUTE}><Scr inline n="scrawl" s="width:30px;height:16px;margin-right:8px" />Your head is saved in this browser. Made by <a href="https://alviy.dev" style={'color:' + INK}>alviy.dev</a>, still crooked.</p>
         </div>
       </div>
     </div>

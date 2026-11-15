@@ -18,13 +18,26 @@
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid var(--rule); }
 ::-webkit-scrollbar-thumb { background: var(--fg); border: 3px solid var(--bg); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+::-webkit-scrollbar-thumb:hover { background: var(--play); }
+/* scribbles: black-ink PNGs used as masks, so they paint in the lime accent */
+.scr { position: absolute; display: block; pointer-events: none; background: var(--play); transform: rotate(var(--r, 0deg));
+  -webkit-mask: var(--m) center / var(--fit, contain) no-repeat; mask: var(--m) center / var(--fit, contain) no-repeat;
+  animation: scr-pop .45s cubic-bezier(.3, 1.7, .5, 1) var(--d, 0s) both, scr-boil .34s steps(1) calc(var(--d, 0s) + .45s) infinite; }
+.scr.inline { position: relative; display: inline-block; vertical-align: -0.15em; }
+@keyframes scr-pop { from { transform: rotate(var(--r, 0deg)) scale(0); } }
+@keyframes scr-boil { 50% { transform: rotate(calc(var(--r, 0deg) + 3deg)) translate(1px, -1px); } } /* jitter on twos, like the line boil */
+.ticker { overflow: hidden; border-top: 1px solid var(--play); border-bottom: 1px solid var(--play); }
+.ticker > div { display: flex; width: max-content; animation: ticker 40s linear infinite; }
+.ticker:hover > div { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+@media (max-width: 760px) { .wide-only { display: none; } }
+@media (prefers-reduced-motion: reduce) { .scr, .ticker > div { animation: none; } }
 ::-webkit-scrollbar-corner { background: var(--bg); }
 @supports not selector(::-webkit-scrollbar) { html { scrollbar-width: thin; scrollbar-color: var(--fg) var(--bg); } }
 body { margin: 0; font-family: 'JetBrains Mono', system-ui, sans-serif; background: var(--bg); color: var(--fg); }
 /* paper grain: one small noise tile, fixed over the page, never takes clicks */
 body::after { content: ''; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .09; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--play); outline-offset: 3px; }
 summary::-webkit-details-marker { display: none; }
 dialog::backdrop { background: rgba(0,0,0,.6); }
 </style>
